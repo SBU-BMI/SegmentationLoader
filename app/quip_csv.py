@@ -308,6 +308,8 @@ def truncate_top(image_id):
     '''
     if pdb["prefix"]:
         image_id = image_id.replace(pdb["prefix"], "")
+        pdb["subject"] = image_id
+        pdb["study"] = image_id
     return image_id
 
 

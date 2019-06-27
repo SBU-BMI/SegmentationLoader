@@ -3,8 +3,8 @@
 PROGNAME=$(basename "$0")
 
 usage() {
-	echo "Usage: $PROGNAME pathdb-url collection study subject user password"
-	exit 1
+  echo "Usage: $PROGNAME pathdb-url collection study subject user password"
+  exit 1
 }
 
 error_exit() {
@@ -14,11 +14,11 @@ error_exit() {
 }
 
 if [[ $# -lt 6 ]] ; then
-	usage
+  usage
 fi
 
 SECONDS=0
-for directory in $(find ./tmp/* -type d);
+for directory in $(find /data/segmentation_results/* -type d);
 do
   echo "$directory"
   python3.7 /app/quip_csv.py --dbhost ca-mongo --dbport 27017 --dbname camic --quip "$directory" --pathdb --url "$1" --collection "$2" --study "$3" --subject "$4" --user "$5" --passwd "$6" || error_exit $LINENO

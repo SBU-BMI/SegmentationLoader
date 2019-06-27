@@ -1,68 +1,29 @@
 # quip_segmentation_loader
 Load WSI segmentations to mongodb instance
+
+## Build
+
+```
+git clone https://github.com/SBU-BMI/quip_segmentation_loader.git
+cd quip_segmentation_loader
+docker build --tag segmentation_loader .
+```
+
+## Run
+Example:
+
+```
+docker run --name seg-loader --network distro_default -v ~/data/segmentation_results:/data/segmentation_results -itd segmentation_loader
+```
+
 ## Usage
-
-### Main Program
-quip_csv.py loads a set of input files to the database
-
-### Parameters
-The following arguments are required:
+### PathDB
 
 ```
---dbname (database name)
---quip	 (path to data folder)
+nohup docker exec seg-loader /app/loadfiles.sh <pathdb-url> <collection> <study> <subject> <username> <password> &
 ```
+(Recommend running load script in background)
 
-Default arguments:
+<!-- See: [Docker repository](https://hub.docker.com/r/sbubmi/segmentation_loader/). -->
 
-```bash
---dbhost	localhost
---dbport	27017
-```
-
-Optional argument:
-
-```bash
---pathdb
-```
-
-Dependency arguments:
-
-The --pathdb argument requires the --url, --user, and --passwd
-
-```
---url			pathdb (example: https://quip.bmi.stonybrook.edu)
---collection	name of collection
---study		study id
---subject       subject id
---user		username
---passwd	password
---prefix    slide name substitution
-            DICOM standard is 16 chars.  Typically, slide name will be truncated 0-16.
-            However, if the name has a non-identifying prefix, the prefix you specify will be removed.
-```
-
-If you want to check the parameters, you could always do this:
-```bash
-python quip_csv.py -h
-```
-## Data
-
-### Input Files
-
-**Features CSV**
-
-Naming convention is: name-features.csv
-
-Header will contain feature names, and `Polygon` is last column.
-
-Polygon field must be last column, in format:
-```
-[float:float:float:float:float]
-```
-
-**Metadata JSON**
-
-For every feature csv, there is a metadata json file.
-
-Naming convention is: name-algmeta.json
+### TBD

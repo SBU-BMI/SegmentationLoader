@@ -25,13 +25,13 @@ def check_metadata(db, mdata, pathdb, pdb):
     query = {}
     if pathdb:
         # query["uuid"] = pdb["uuid"]
-        query["slide"] = pdb["slide"]
+        query["image.slide"] = str(pdb["slide"])
     else:
         # Keys: slide, specimen, study, execution_id
-        query["image.slide"] = mdata["case_id"]
-        query["image.specimen"] = ""  # Specimen currently blank
+        query["image.slide"] = str(mdata["case_id"])
         query["image.study"] = ""
         query["analysis.execution_id"] = mdata["analysis_id"]
+    query["image.specimen"] = ""  # Specimen currently blank
     res = db.analysis.find_one(query)
     return res
 
@@ -45,14 +45,12 @@ def submit_metadata(db, mdata, pathdb, pdb):
 
     if pathdb:
         # mdoc["uuid"] = pdb["uuid"]
-        imgdoc["slide"] = pdb["slide"]
-        imgdoc["imageid"] = pdb["imageid"]
+        imgdoc["slide"] = str(pdb["slide"])
+        imgdoc["imageid"] = str(pdb["imageid"])
         imgdoc["study"] = pdb["study"]
         imgdoc["subject"] = pdb["subject"]
-        # imgdoc["study"] = pdb["imageid"]
-        # imgdoc["subject"] = pdb["imageid"]
     else:
-        imgdoc["slide"] = mdata["case_id"]
+        imgdoc["slide"] = str(mdata["case_id"])
         imgdoc["study"] = ""
         imgdoc["subject"] = mdata["subject_id"]
 
@@ -61,7 +59,31 @@ def submit_metadata(db, mdata, pathdb, pdb):
     provdoc["execution_id"] = mdata["analysis_id"]
     provdoc["type"] = "computer"
     provdoc["computation"] = "segmentation"
-    provdoc["algorithm_params"] = mdata
+
+    # provdoc["algorithm_params"] = mdata
+    algparms = {}
+    algparms["input_type"] = mdata["input_type"]
+    algparms["otsu_ratio"] = mdata["otsu_ratio"]
+    algparms["curvature_weight"] = mdata["curvature_weight"]
+    algparms["min_size"] = mdata["min_size"]
+    algparms["max_size"] = mdata["max_size"]
+    algparms["ms_kernel"] = mdata["ms_kernel"]
+    algparms["declump_type"] = mdata["declump_type"]
+    algparms["levelset_num_iters"] = mdata["levelset_num_iters"]
+    algparms["mpp"] = mdata["mpp"]
+    algparms["image_width"] = mdata["image_width"]
+    algparms["image_height"] = mdata["image_height"]
+    algparms["tile_width"] = mdata["tile_width"]
+    algparms["tile_height"] = mdata["tile_height"]
+    algparms["patch_width"] = mdata["patch_width"]
+    algparms["patch_height"] = mdata["patch_height"]
+    algparms["output_level"] = mdata["output_level"]
+    algparms["subject_id"] = mdata["subject_id"]
+    algparms["case_id"] = mdata["case_id"]
+    algparms["analysis_id"] = mdata["analysis_id"]
+    algparms["analysis_desc"] = mdata["analysis_desc"]
+    provdoc["algorithm_params"] = algparms
+
     provdoc["randval"] = random.random()
     provdoc["submit_date"] = datetime.datetime.utcnow()
     mdoc["analysis"] = provdoc
