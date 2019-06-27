@@ -1,0 +1,13 @@
+version: '2'
+services:
+  app:
+    build: ./app
+    image: segmentation_loader
+    volumes:
+    - ../app:/app
+    - ../app/tmp:/app/tmp
+    container_name: seg-loader
+networks:
+  default:
+    external:
+      name: distro_default

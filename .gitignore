@@ -1,4 +1,10 @@
-# Byte-compiled / optimized / DLL files
+# macOS
+.DS_Store
+
+# JetBrains IDE
+.idea/*
+
+# Python Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
