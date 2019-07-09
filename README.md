@@ -28,8 +28,12 @@ Use that information in place of `distro_default` above.
 This file will be passed as an argument to the program.  See manifest.csv for further details.
 Putting this file in the mapped local directory (`~/data/segmentation_results`, above) is recommended.
 
+`path` should be relative to the docker container.
+Example: /data/segmentation_results/WSI_FOLDER_NAME
+
 ## Usage
 Running the following as a background process is recommended.
+
 ### PathDB
 
 ```
