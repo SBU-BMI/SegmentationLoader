@@ -319,7 +319,7 @@ def is_blank(myString):
 
 def check_args_pathdb(args):
     if not args['user'] or not args['passwd'] or not args['url']:
-        print("error on dependency")
+        print("dependency error")
         print("when in pathdb mode, must provide: url, username, and password")
         exit(1)
 
@@ -348,11 +348,14 @@ if __name__ == "__main__":
     if pathdb:
         check_args_pathdb(quipargs.args)
 
-    with open('../manifest.csv') as csv_file:
+    with open(quipargs.args['manifest']) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         next(csv_reader)
         for row in csv_reader:
             file_loc = row[0]
+            if file_loc == 'use path as seen by the seg-loader docker':
+                print('manifest file data error')
+                exit(1)
             pdb["collection"] = row[1]  # From manifest file.
             pdb["study"] = row[2]
             pdb["subject"] = row[3]

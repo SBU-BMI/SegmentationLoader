@@ -1,6 +1,7 @@
 import argparse
 
 parser = argparse.ArgumentParser(description="QuIP results loader.")
+parser.add_argument("--manifest", required=True, metavar="<manifest>", type=str, help="manifest.csv location")
 # MONGODB
 parser.add_argument("--dbhost", default="localhost", metavar="<hostname>", type=str, help="FeatureDB host name. Default: localhost")
 parser.add_argument("--dbport", default=27017, type=int, metavar="<port>", help="FeatureDB host port. Default: 27017")
