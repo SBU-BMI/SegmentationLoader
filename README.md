@@ -1,5 +1,5 @@
 # quip_segmentation_loader
-Load WSI segmentations to mongodb instance
+Load WSI segmentations to mongodb instance in a Docker network environment (i.e. QuIP).
 
 ## Build
 
