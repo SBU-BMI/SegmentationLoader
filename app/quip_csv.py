@@ -231,16 +231,14 @@ def set_provenance_metadata(mdata, batch_id, tag_id, name, pathdb, pdb):
         image["slide"] = str(pdb["slide"])
         image["imageid"] = pdb["imageid"]
         image["study"] = pdb["study"]
+        image["subject"] = pdb["subject"]
     else:
         image["slide"] = mdata["case_id"]
+        image["imageid"] = mdata["case_id"]
         image["study"] = ''
-    image["specimen"] = ''  # Specimen currently blank
-
-    if pathdb:
-        image["subject"] = pdb["subject"]
-        # image["subject"] = pdb["imageid"]
-    else:
         image["subject"] = mdata["subject_id"]
+
+    image["specimen"] = ''  # Specimen currently blank
 
     # ANALYSIS
     analysis = {}
@@ -284,56 +282,17 @@ def get_auth_token():
     return token_string
 
 
-def get_image_id(image_id):
-    # TODO: Uncomment one of the following, according to your requirements.
-    # pdb["imageid"] = truncate_top(image_id)
-    pdb["imageid"] = truncate_end(image_id)
-    # pdb["imageid"] = brca_split(image_id)
-    return pdb["imageid"]
-
-
-def truncate_end(image_id):
-    '''
-    DICOM compliance 16 characters
-    Shorten by cutting off the end.
-    '''
-    if len(image_id) > 16:
-        image_id = image_id[0:16]
-    return image_id
-
-
-def truncate_top(image_id):
-    '''
-    Shorten by cutting off the top; the prefix.
-    '''
-    if pdb["prefix"]:
-        image_id = image_id.replace(pdb["prefix"], "")
-        pdb["subject"] = image_id
-        pdb["study"] = image_id
-    return image_id
-
-
-def brca_split(image_id):
-    '''
-    subjectid = chars 0 - 12
-    imageid = chars 8 - 23
-    '''
-    pdb["imageid"] = image_id[8:23]
-    pdb["subject"] = image_id[0:12]
-    return pdb["imageid"]
-
-
-def get_slide_unique_id():
+def get_slide_unique_id(collection, studyid, clinicaltrialsubjectid, imageid):
     # Get token
     token = get_auth_token()
 
     # COLLECTION/STUDY/SUBJECT/IMAGE
-    coll_encoded = urllib.parse.quote(pdb["collection"])
+    coll_encoded = urllib.parse.quote(collection)
 
     # NEW WAY
-    endpoint = pdb["url"] + "/idlookup/" + coll_encoded + "/" + pdb["study"] + "/" + pdb["subject"] + "/" + pdb["imageid"]
+    endpoint = pdb["url"] + "/idlookup/" + coll_encoded + "/" + studyid + "/" + clinicaltrialsubjectid + "/" + imageid
     # OLD WAY
-    # endpoint = pdb["url"] + "/idlookup/" + pdb["study"] + "/" + pdb["subject"] + "/" + pdb["imageid"] + "/" + coll_encoded
+    # endpoint = pdb["url"] + "/idlookup/" + studyid + "/" + clinicaltrialsubjectid + "/" + imageid + "/" + coll_encoded
     # print('endpoint', endpoint)
 
     headers = {"Authorization": "Bearer " + token}
@@ -359,26 +318,16 @@ def is_blank(myString):
 
 
 def check_args_pathdb(args):
-    if not args['user'] or not args['passwd'] or not args['url'] or not args['collection'] or not args['study']:
-        # or not args['subject']:
+    if not args['user'] or not args['passwd'] or not args['url']:
         print("error on dependency")
-        print("when in pathdb mode, must provide: url, collection name, study, username and password")
-        exit(1)
-
-    if is_blank(args["study"]) or is_blank(args["collection"]):
-        #  or is_blank(args["subject"])
-        print('error: study and collection - cannot be blank')
+        print("when in pathdb mode, must provide: url, username, and password")
         exit(1)
 
     pdb["url"] = args["url"]
     pdb["user"] = args["user"]
     pdb["passwd"] = args["passwd"]
-    pdb["study"] = args["study"]
-    pdb["subject"] = args["subject"]  # TODO: WATCH OUT - CHECK get_image_id() FOR OVERRIDE.
-    pdb["collection"] = args["collection"]
     pdb["slide"] = ""
     # pdb["uuid"] = ""
-    pdb["prefix"] = args["prefix"]
 
 
 class MyException(Exception):
@@ -395,23 +344,21 @@ if __name__ == "__main__":
 
     random.seed(a=None)
     csv.field_size_limit(sys.maxsize)
-    mfiles = get_file_list(quipargs.args["quip"])
-    if len(mfiles) == 0:
-        print('There are no files to process in directory ' + quipargs.args["quip"])
-        exit(1)
-    else:
+    
+    # mfiles = get_file_list(quipargs.args["quip"])
+    # TODO: Iterate through manifest file for file locations
+    if True:
+
         if pathdb:
             check_args_pathdb(quipargs.args)
 
             try:
-                tup = mfiles[0]
-                dir = tup[0]
-                algmeta_json = tup[1]
-                index = tup[2]
-                mdata = read_metadata(algmeta_json)
-                _id = ""
-                get_image_id(mdata["case_id"])
-                _id = get_slide_unique_id()
+                pdb["collection"]) = collection  # From manifest file.
+                pdb["study"]) = studyid
+                pdb["subject"]) = clinicaltrialsubjectid
+                pdb["imageid"]) = imageid
+                
+                _id = get_slide_unique_id(collection, studyid, clinicaltrialsubjectid, imageid)
                 if is_blank(_id):
                     print('Slide not found ' + pdb["imageid"])
                     exit(1)
