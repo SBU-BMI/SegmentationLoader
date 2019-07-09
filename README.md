@@ -24,7 +24,7 @@ docker inspect ca-mongo -f "{{json .NetworkSettings }}"
 ```
 Use that information in place of `distro_default` above.
 
-## manifest.csv
+### manifest.csv
 This file will be passed as an argument to the program.  See manifest.csv for further details.
 Putting this file in the mapped local directory (`~/data/segmentation_results`, above) is recommended.
 
