@@ -28,6 +28,6 @@ Use that information in place of `distro_default` above.
 ### PathDB
 
 ```
-nohup docker exec seg-loader /app/loadfiles.sh <pathdb-url> <collection> <study> <subject> <username> <password> &
+docker exec seg-loader /app/loadfiles.sh <dbhost> <dbport> <dbname> <url> <username> <password> <manifest.csv>
 ```
-(Recommend running load script in background)
+
