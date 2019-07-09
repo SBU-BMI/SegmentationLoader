@@ -16,6 +16,8 @@ Example:
 docker run --name seg-loader --network distro_default -v ~/data/segmentation_results:/data/segmentation_results -itd segmentation_loader
 ```
 
+Map your local segmentation results directory to `/data/segmentation_results`.
+
 To find out what network:
 ```
 docker inspect ca-mongo -f "{{json .NetworkSettings }}"
