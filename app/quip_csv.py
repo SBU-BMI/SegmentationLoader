@@ -300,7 +300,7 @@ def get_slide_unique_id(collection, studyid, clinicaltrialsubjectid, imageid):
     if response:
         # pdb["uuid"] = response[0]['uuid'][0]['value']
         pdb["slide"] = response[0]['nid'][0]['value']
-        print(pdb["slide"])
+        print('slide id', pdb["slide"])
     else:
         print('Error getting ID.', response)
         print('endpoint', endpoint)
@@ -344,21 +344,22 @@ if __name__ == "__main__":
 
     random.seed(a=None)
     csv.field_size_limit(sys.maxsize)
-    
-    # mfiles = get_file_list(quipargs.args["quip"])
-    # TODO: Iterate through manifest file for file locations
-    if True:
 
-        if pathdb:
-            check_args_pathdb(quipargs.args)
+    if pathdb:
+        check_args_pathdb(quipargs.args)
+
+    with open('../manifest.csv') as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        next(csv_reader)
+        for row in csv_reader:
+            file_loc = row[0]
+            pdb["collection"] = row[1]  # From manifest file.
+            pdb["study"] = row[2]
+            pdb["subject"] = row[3]
+            pdb["imageid"] = row[4]
 
             try:
-                pdb["collection"]) = collection  # From manifest file.
-                pdb["study"]) = studyid
-                pdb["subject"]) = clinicaltrialsubjectid
-                pdb["imageid"]) = imageid
-                
-                _id = get_slide_unique_id(collection, studyid, clinicaltrialsubjectid, imageid)
+                _id = get_slide_unique_id(pdb["collection"], pdb["study"], pdb["subject"], pdb["imageid"])
                 if is_blank(_id):
                     print('Slide not found ' + pdb["imageid"])
                     exit(1)
@@ -367,5 +368,6 @@ if __name__ == "__main__":
                 print(details)
                 exit(1)
 
-        p = Pool(processes=2)
-        p.map(process_quip, mfiles, 1)
+            mfiles = get_file_list(file_loc)
+            p = Pool(processes=2)
+            p.map(process_quip, mfiles, 1)
