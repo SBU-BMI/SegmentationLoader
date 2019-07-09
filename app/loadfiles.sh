@@ -22,7 +22,7 @@ if [[ $# -eq 0 ]] ; then
 fi
 
 if [[ $# -eq 4 ]] ; then
-  python3.7 /app/quip_csv.py --dbhost $1 --dbport $2 --dbname $3 --manifest $7 || error_exit $LINENO
+  python3.7 /app/quip_csv.py --dbhost $1 --dbport $2 --dbname $3 --manifest $4 || error_exit $LINENO
 else
   python3.7 /app/quip_csv.py --dbhost $1 --dbport $2 --dbname $3 --pathdb --url $4 --user $5 --passwd $6 --manifest $7 || error_exit $LINENO
 fi
