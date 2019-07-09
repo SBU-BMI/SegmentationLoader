@@ -16,6 +16,12 @@ Example:
 docker run --name seg-loader --network distro_default -v ~/data/segmentation_results:/data/segmentation_results -itd segmentation_loader
 ```
 
+To find out what network:
+```
+docker inspect ca-mongo -f "{{json .NetworkSettings }}"
+```
+Use that information in place of `distro_default` above.
+
 ## Usage
 ### PathDB
 
@@ -23,7 +29,3 @@ docker run --name seg-loader --network distro_default -v ~/data/segmentation_res
 nohup docker exec seg-loader /app/loadfiles.sh <pathdb-url> <collection> <study> <subject> <username> <password> &
 ```
 (Recommend running load script in background)
-
-<!-- See: [Docker repository](https://hub.docker.com/r/sbubmi/segmentation_loader/). -->
-
-### TBD
