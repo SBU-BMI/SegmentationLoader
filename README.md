@@ -1,4 +1,4 @@
-# quip_segmentation_loader
+# quip\_segmentation\_loader
 Load WSI segmentations to mongodb instance in a Docker network environment (i.e. QuIP).
 
 ## Build
@@ -25,9 +25,21 @@ docker inspect ca-mongo -f "{{json .NetworkSettings }}"
 Use that information in place of `distro_default` above.
 
 ## Usage
+Running the following as a background process is recommended.
 ### PathDB
 
 ```
 docker exec seg-loader /app/loadfiles.sh <dbhost> <dbport> <dbname> <url> <username> <password> <manifest.csv>
 ```
+### camic
+```
+docker exec seg-loader /app/loadfiles.sh <dbhost> <dbport> <dbname> <manifest.csv>
+```
 
+### Note: 
+
+For non-PathDB usage, the manifest.csv file **will** be used for file location.<br>
+`collection` is irrelevant, so it won't be used.<br>
+`subject` field will be retrieved from the segmentation data `mdata["subject_id"]`.<br>
+`study` will be blank.<br>
+`slide` and `imageid` will be set to `mdata["case_id"]`.
