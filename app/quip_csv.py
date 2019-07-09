@@ -356,20 +356,22 @@ if __name__ == "__main__":
             if file_loc == 'use path as seen by the seg-loader docker':
                 print('manifest file data error')
                 exit(1)
-            pdb["collection"] = row[1]  # From manifest file.
-            pdb["study"] = row[2]
-            pdb["subject"] = row[3]
-            pdb["imageid"] = row[4]
 
-            try:
-                _id = get_slide_unique_id(pdb["collection"], pdb["study"], pdb["subject"], pdb["imageid"])
-                if is_blank(_id):
-                    print('Slide not found ' + pdb["imageid"])
+            if pathdb:
+                pdb["collection"] = row[1]  # From manifest file.
+                pdb["study"] = row[2]
+                pdb["subject"] = row[3]
+                pdb["imageid"] = row[4]
+
+                try:
+                    _id = get_slide_unique_id(pdb["collection"], pdb["study"], pdb["subject"], pdb["imageid"])
+                    if is_blank(_id):
+                        print('Slide not found ' + pdb["imageid"])
+                        exit(1)
+                except MyException as e:
+                    details = e.args[0]
+                    print(details)
                     exit(1)
-            except MyException as e:
-                details = e.args[0]
-                print(details)
-                exit(1)
 
             mfiles = get_file_list(file_loc)
             p = Pool(processes=2)
