@@ -24,7 +24,7 @@ fi
 # if [[ $# -eq 4 ]] ; then
 # python3.7 /app/quip_csv.py --dbhost $1 --dbport $2 --dbname $3 --manifest $4 || error_exit $LINENO
 # else
-python3.7 /app/quip_csv.py --dbhost "ca-mongo" --dbport 27017 --dbname camic --pathdb --url "http://quip-pathdb" --user $1 --passwd $2 --manifest "/data/segmentation_results/manifest.csv" || error_exit $LINENO
+python3.7 /app/quip_csv.py --dbhost "ca-mongo" --dbport 27017 --dbname camic --pathdb --url "http://quip-pathdb" "$@" || error_exit $LINENO
 # fi
 
 SECONDS=0

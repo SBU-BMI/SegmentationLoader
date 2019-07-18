@@ -2,6 +2,7 @@
 Loads wsi segmentations to the database.
 """
 import csv
+import os
 import glob
 import json
 import random
@@ -318,11 +319,11 @@ def is_blank(myString):
 
 
 def check_args_pathdb(args):
-    if not args['user'] or not args['passwd'] or not args['url']:
+    if not args['user'] or not args['passwd'] or not args['collectionname']:
         print("dependency error")
         print("when in pathdb mode, must provide: url, username, and password")
         exit(1)
-
+    pdb["collection"] = args["collectionname"]
     pdb["url"] = args["url"]
     pdb["user"] = args["user"]
     pdb["passwd"] = args["passwd"]
@@ -348,20 +349,26 @@ if __name__ == "__main__":
     if pathdb:
         check_args_pathdb(quipargs.args)
 
-    with open(quipargs.args['manifest']) as csv_file:
+    dirpath = quipargs.args['src']
+    manifest = os.path.join(dirpath, 'manifest.csv')
+    if not os.path.exists(manifest):
+        print('Manifest file not found:', manifest)
+        exit(1)
+
+    with open(manifest) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         next(csv_reader)
         for row in csv_reader:
-            file_loc = row[0]
-            if file_loc == 'use path as seen by the seg-loader docker':
-                print('manifest file data error')
+            file_loc = os.path.join(dirpath, row[0])
+
+            if not os.path.exists(file_loc):
+                print('File location not found:', file_loc)
                 exit(1)
 
             if pathdb:
-                pdb["collection"] = row[1]  # From manifest file.
-                pdb["study"] = row[2]
-                pdb["subject"] = row[3]
-                pdb["imageid"] = row[4]
+                pdb["study"] = row[1]
+                pdb["subject"] = row[2]
+                pdb["imageid"] = row[3]
 
                 try:
                     _id = get_slide_unique_id(pdb["collection"], pdb["study"], pdb["subject"], pdb["imageid"])
