@@ -9,5 +9,5 @@ Running the following as a background process is recommended.
 
 Example:
 ```
-nohup docker exec quip-segloader /app/loadfiles.sh username password &  
+nohup docker exec quip-segloader loadfiles username password &  
 ```
