@@ -4,8 +4,8 @@ Load WSI segmentations to mongodb instance in a Docker network environment (i.e.
 ## Build
 
 ```
-git clone https://github.com/SBU-BMI/quip_segmentation_loader.git
-cd quip_segmentation_loader
+git clone https://github.com/SBU-BMI/SegmentationLoader.git
+cd SegmentationLoader
 docker build --tag segmentation_loader .
 ```
 
