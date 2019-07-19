@@ -10,5 +10,5 @@ Running the following as a background process is recommended.
 Example:
 
 ```
-nohup docker exec quip-segloader loadfiles --src --collectionname --user --passwd &  
+nohup docker exec quip-segloader loadfiles --src [data subfolder] --collectionname [pathdb collection] --user [username] --passwd [password] &  
 ```
