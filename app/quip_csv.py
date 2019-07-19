@@ -349,8 +349,10 @@ if __name__ == "__main__":
     if pathdb:
         check_args_pathdb(quipargs.args)
 
-    dirpath = quipargs.args['src']
+    dirpath = os.path.join('data', quipargs.args['src'])
     manifest = os.path.join(dirpath, 'manifest.csv')
+    print('dirpath', dirpath)
+    print('manifest', manifest)
     if not os.path.exists(manifest):
         print('Manifest file not found:', manifest)
         exit(1)
