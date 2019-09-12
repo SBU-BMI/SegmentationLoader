@@ -28,3 +28,7 @@ Edit the file and edit `volumes` - set the source to your main data folder.
 Currently, source is set to `./data`
 
 If your network name should change (<u>Hint:</u> it shouldn't!) then change `networks` as well.
+
+### Note
+This application is based on the premise that the folder name is the same as the SVS file name.  ie. TCGA-XX-XXXX-XXX-XX-XXX.svs should be what goes into the manifest under "segmentdir".
+This project is a work in progress.
