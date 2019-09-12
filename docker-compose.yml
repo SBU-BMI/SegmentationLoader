@@ -1,0 +1,15 @@
+version: '3.5'
+
+services:
+  segloader:
+    build: "https://github.com/SBU-BMI/SegmentationLoader.git"
+    image: quip_distro_segloader
+    container_name: quip-segloader
+    volumes:
+      - ./data:/data
+    networks:
+      - quip_distro_default
+
+networks:
+  quip_distro_default:
+   name: quip_distro_default

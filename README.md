@@ -3,12 +3,28 @@ Load WSI segmentations to mongodb instance in a Docker network environment (i.e.
 
 Loading segmentations:
 
+<!--
 Segmentation results to be loaded to PathDB must reside in a subfolder within the QuIP main data folder. This subfolder must contain the appropriate manifest file.
+-->
 
-Running the following as a background process is recommended.
+Running the loader as a **background process** is highly recommended.
 
-Example:
+Example command:
 
 ```
-nohup docker exec quip-segloader loadfiles --src [subfolder name] --collectionname [pathdb collection] --user [username] --passwd [password] &  
+nohup docker exec quip-segloader loadfiles --src [data_folder] --collectionname [pathdb collection] --user [username] --passwd [password] &
 ```
+
+Regarding --src [data_folder]:<br>
+See directory structure of ./data for example<br>
+In this case, the folder name you would pass to the program is `brca`.<br>
+Also note the manifest.csv file location.
+
+### Build
+docker-compose.yml included for convenience
+
+Edit the file and edit `volumes` - set the source to your main data folder.
+
+Currently, source is set to `./data`
+
+If your network name should change (<u>Hint:</u> it shouldn't!) then change `networks` as well.

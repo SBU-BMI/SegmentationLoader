@@ -350,6 +350,7 @@ if __name__ == "__main__":
         check_args_pathdb(quipargs.args)
 
     dirpath = os.path.join('/data', quipargs.args['src'])
+    # dirpath = '/data/segmentation_results'
     manifest = os.path.join(dirpath, 'manifest.csv')
     print('dirpath', dirpath)
     print('manifest', manifest)
