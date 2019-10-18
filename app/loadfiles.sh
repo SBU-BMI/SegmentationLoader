@@ -8,7 +8,7 @@ RED="\\033[1;31m"
 usage() {
   printf "${RED}USAGE:\n"
   # echo "If pathdb:"
-  printf "    $PROGNAME user passwd manifest${NORMAL}\n"
+  printf "    $PROGNAME --src [data_folder] --collectionname [pathdb collection] --user [username] --passwd [password]${NORMAL}\n"
   # echo "Else:"
   # echo "$PROGNAME dbhost dbport dbname manifest"
   exit 1
