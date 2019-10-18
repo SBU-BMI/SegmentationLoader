@@ -6,9 +6,9 @@ NORMAL="\\033[0;39m"
 RED="\\033[1;31m"
 
 usage() {
-  echo "USAGE: "
+  printf "${RED}USAGE:\n"
   # echo "If pathdb:"
-  printf "    ${RED}$PROGNAME user passwd manifest${NORMAL}\n"
+  printf "    $PROGNAME user passwd manifest${NORMAL}\n"
   # echo "Else:"
   # echo "$PROGNAME dbhost dbport dbname manifest"
   exit 1
