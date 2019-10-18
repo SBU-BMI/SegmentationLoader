@@ -3,7 +3,7 @@
 PROGNAME=$(basename "$0")
 
 usage() {
-  echo "Usage: "
+  echo "USAGE: "
   # echo "If pathdb:"
   echo "$PROGNAME user passwd manifest"
   # echo "Else:"
