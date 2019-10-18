@@ -20,7 +20,7 @@ error_exit() {
 }
 
 # Check input
-if [[ $# -eq 3 ]] ; then
+if [[ $# -eq 8 ]] ; then
   # do the thing
   python3.7 /app/quip_csv.py --dbhost "ca-mongo" --dbport 27017 --dbname camic --pathdb --url "http://quip-pathdb" "$@" || error_exit $LINENO
 else
