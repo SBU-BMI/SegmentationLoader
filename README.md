@@ -20,6 +20,14 @@ See directory structure of ./data for example<br>
 In this case, the folder name you would pass to the program is `brca`.<br>
 Also note the manifest.csv file location.
 
+### Manifest file
+Segmentation data is one folder per slide.  So in the manifest, you'll have:
+
+```
+datadir    studyid    clinicaltrialsubjectid    imageid
+```
+
+
 ### Build
 docker-compose.yml included for convenience
 
