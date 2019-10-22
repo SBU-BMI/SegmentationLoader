@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+SECONDS=0
 PROGNAME=$(basename "$0")
 
 NORMAL="\\033[0;39m"
@@ -19,22 +20,24 @@ error_exit() {
   exit 1
 }
 
-# Check input
-if [[ $# -eq 8 ]] ; then
-  # do the thing
-  python3.7 /app/quip_csv.py --dbhost "ca-mongo" --dbport 27017 --dbname camic --pathdb --url "http://quip-pathdb" "$@" || error_exit $LINENO
-else
-  usage  
-fi
-
-SECONDS=0
+run_it() {
+  num_args=$1
+  # Check input
+  if [[ $num_args -eq 8 ]]; then
+    # do the thing
+    python3.7 /app/quip_csv.py --dbhost "ca-mongo" --dbport 27017 --dbname camic --pathdb --url "http://quip-pathdb" "$@" || error_exit $LINENO
+  else
+    usage
+  fi
+  #==============
+  # if [[ $# -eq 4 ]] ; then
+  # python3.7 /app/quip_csv.py --dbhost $1 --dbport $2 --dbname $3 --manifest $4 || error_exit $LINENO
+  # else
+  # python3.7 /app/quip_csv.py --dbhost "ca-mongo" --dbport 27017 --dbname camic --pathdb --url "http://quip-pathdb" "$@" || error_exit $LINENO
+  # fi
+}
+num_args=$#
+run_it $num_args
 
 ELAPSED="Elapsed: $(($SECONDS / 3600))hrs $(($SECONDS / 60 % 60))min $(($SECONDS % 60))sec"
 echo "$ELAPSED"
-
-#==============
-# if [[ $# -eq 4 ]] ; then
-# python3.7 /app/quip_csv.py --dbhost $1 --dbport $2 --dbname $3 --manifest $4 || error_exit $LINENO
-# else
-# python3.7 /app/quip_csv.py --dbhost "ca-mongo" --dbport 27017 --dbname camic --pathdb --url "http://quip-pathdb" "$@" || error_exit $LINENO
-# fi
