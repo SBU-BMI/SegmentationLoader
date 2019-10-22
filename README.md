@@ -1,6 +1,6 @@
 # SegmentationLoader
 Load WSI segmentations to mongodb instance in a Docker network environment (i.e. QuIP).
-<!-- docker run --name seg-loader --network distro_default -v ~/data/segmentation_results:/data/segmentation_results -itd segmentation_loader -->
+<!-- docker run --name quip-segloader --network distro_default -v ~/data/segmentation_results:/data/segmentation_results -itd quip_distro_segloader -->
 
 ## Setup
 ### Folder Structure
