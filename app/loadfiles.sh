@@ -22,10 +22,11 @@ error_exit() {
 
 run_it() {
   num_args=$1
+  parms="$2"
   # Check input
   if [[ $num_args -eq 8 ]]; then
     # do the thing
-    python3.7 /app/quip_csv.py --dbhost "ca-mongo" --dbport 27017 --dbname camic --pathdb --url "http://quip-pathdb" "$@" || error_exit $LINENO
+    python3.7 /app/quip_csv.py --dbhost "ca-mongo" --dbport 27017 --dbname camic --pathdb --url "http://quip-pathdb" "$parms" || error_exit $LINENO
   else
     usage
   fi
@@ -37,7 +38,8 @@ run_it() {
   # fi
 }
 num_args=$#
-run_it $num_args
+parms="$@"
+run_it $num_args $parms
 
 ELAPSED="Elapsed: $(($SECONDS / 3600))hrs $(($SECONDS / 60 % 60))min $(($SECONDS % 60))sec"
 echo "$ELAPSED"
