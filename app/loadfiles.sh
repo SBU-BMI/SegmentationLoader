@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-SECONDS=0
+echo "-----------------------------------------------------"
+echo "Start Date: $(date)               Host:$(hostname)   "
+echo "-----------------------------------------------------"
+
 PROGNAME=$(basename "$0")
 
 NORMAL="\\033[0;39m"
@@ -22,7 +25,7 @@ error_exit() {
 
 # Check input
 if [[ $# -eq 8 ]]; then
-  # do the thing
+  # do all the things
   python3.7 /app/quip_csv.py --dbhost "ca-mongo" --dbport 27017 --dbname camic --pathdb --url "http://quip-pathdb" "$@" || error_exit $LINENO
 else
   usage
@@ -34,5 +37,6 @@ fi
 # python3.7 /app/quip_csv.py --dbhost "ca-mongo" --dbport 27017 --dbname camic --pathdb --url "http://quip-pathdb" "$@" || error_exit $LINENO
 # fi
 
-ELAPSED="Elapsed: $(($SECONDS / 3600))hrs $(($SECONDS / 60 % 60))min $(($SECONDS % 60))sec"
-echo "$ELAPSED"
+echo "-----------------------------------------------------"
+echo "End Date: $(date)                 Host:$(hostname)   "
+echo "-----------------------------------------------------"
