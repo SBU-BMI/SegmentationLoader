@@ -34,12 +34,14 @@ Running the loader as a <span style="background-color: #FFFF00">background proce
 
 ```
 # Command with arguments:
-nohup docker exec quip-segloader loadfiles --src [data_folder] --collectionname [pathdb collection] --user [username] --passwd [password] &
+nohup docker exec quip-segloader loadfiles --src [data_folder] --collectionname [pathdb collection] --user [username] --passwd [password] > /dev/null &
 
 # Example:
-nohup docker exec quip-segloader loadfiles --src segmentation_results --collectionname TCGABRCA --user [your username] --passwd [your password] &
+nohup docker exec quip-segloader loadfiles --src segmentation_results --collectionname TCGABRCA --user [your username] --passwd [your password] > /dev/null &
 
 ```
+
+The `> /dev/null &` is for keeping any error logs that may occur, but not generate any other output files (so as to not eat up all the space).
 
 data_folder = top-level directory containing segmentation subfolder and manifest.csv
 
