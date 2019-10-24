@@ -1,22 +1,29 @@
 """
 Loads wsi segmentations to the database.
 """
+from __future__ import print_function
+
 import csv
-import os
 import glob
 import json
+import os
 import random
 import sys
 import urllib.parse
 from multiprocessing import Pool
 
-import quipargs
-import quipdb
 import requests
 from geojson import Point, Polygon
 
+import quipargs
+import quipdb
+
 pathdb = False
 pdb = {}
+
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 
 def get_file_list(folder):
@@ -70,8 +77,8 @@ def process_file(mdata, fname, idx):
     polycol = headers.index("Polygon")
 
     if is_blank(mdata["analysis_id"]):
-        print('execution_id cannot be blank. File:', fname)
-        sys.exit()
+        eprint('execution_id cannot be blank. File:', fname)
+        exit(1)
 
     cnt = 0
     multi_documents = []
@@ -303,8 +310,8 @@ def get_slide_unique_id(collection, studyid, clinicaltrialsubjectid, imageid):
         pdb["slide"] = response[0]['nid'][0]['value']
         # print('slide id', pdb["slide"])
     else:
-        print('Error getting ID.', response)
-        print('endpoint', endpoint)
+        eprint('Error getting ID.', response)
+        eprint('endpoint', endpoint)
         exit(1)
 
     return str(pdb["slide"])
@@ -320,8 +327,8 @@ def is_blank(myString):
 
 def check_args_pathdb(args):
     if not args['user'] or not args['passwd'] or not args['collectionname']:
-        print("dependency error")
-        print("when in pathdb mode, must provide: url, username, and password")
+        eprint("dependency error")
+        eprint("when in pathdb mode, must provide: url, username, and password")
         exit(1)
     pdb["collection"] = args["collectionname"]
     pdb["url"] = args["url"]
@@ -350,39 +357,39 @@ if __name__ == "__main__":
         check_args_pathdb(quipargs.args)
 
     dirpath = os.path.join('/data', quipargs.args['src'])
-    # dirpath = '/data/segmentation_results'
     manifest = os.path.join(dirpath, 'manifest.csv')
-    print('dirpath', dirpath)
-    print('manifest', manifest)
     if not os.path.exists(manifest):
-        print('Manifest file not found:', manifest)
+        eprint('Manifest file not found:', manifest)
         exit(1)
 
-    with open(manifest) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
-        next(csv_reader)
-        for row in csv_reader:
-            file_loc = os.path.join(dirpath, row[0])
+    try:
+        with open(manifest) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            next(csv_reader)
+            for row in csv_reader:
+                file_loc = os.path.join(dirpath, row[0])
 
-            if not os.path.exists(file_loc):
-                print('File location not found:', file_loc)
-                exit(1)
-
-            if pathdb:
-                pdb["study"] = row[1]
-                pdb["subject"] = row[2]
-                pdb["imageid"] = row[3]
-
-                try:
-                    _id = get_slide_unique_id(pdb["collection"], pdb["study"], pdb["subject"], pdb["imageid"])
-                    if is_blank(_id):
-                        print('Slide not found ' + pdb["imageid"])
-                        exit(1)
-                except MyException as e:
-                    details = e.args[0]
-                    print(details)
+                if not os.path.exists(file_loc):
+                    eprint('File location not found:', file_loc)
                     exit(1)
 
-            mfiles = get_file_list(file_loc)
-            p = Pool(processes=2)
-            p.map(process_quip, mfiles, 1)
+                if pathdb:
+                    pdb["study"] = row[1]
+                    pdb["subject"] = row[2]
+                    pdb["imageid"] = row[3]
+
+                    try:
+                        _id = get_slide_unique_id(pdb["collection"], pdb["study"], pdb["subject"], pdb["imageid"])
+                        if is_blank(_id):
+                            eprint('Slide not found ' + pdb["imageid"])
+                            exit(1)
+                    except MyException as e:
+                        details = e.args[0]
+                        eprint(details)
+                        exit(1)
+
+                mfiles = get_file_list(file_loc)
+                p = Pool(processes=2)
+                p.map(process_quip, mfiles, 1)
+    except:
+        eprint('Could not parse file: ', manifest)
