@@ -57,7 +57,7 @@ def process_file(mdata, fname, idx):
     '''
     Creates json and uploads to mongo
     '''
-    print("IDX: ", idx, " File: ", fname)
+    # print("IDX: ", idx, " File: ", fname)
     image_width = mdata["image_width"]
     image_height = mdata["image_height"]
     # print(image_width, image_height)
@@ -120,7 +120,6 @@ def process_file(mdata, fname, idx):
         set_document_metadata(gj_poly, corners, mdata, "b0", "t0", name)
         multi_documents.append(gj_poly)
         cnt = cnt + 1
-    # print("IDX: ", idx, " File: ", fname, "  Count: ", cnt)
 
     if cnt > 0:
         dbhost = quipargs.args["dbhost"]
@@ -302,7 +301,7 @@ def get_slide_unique_id(collection, studyid, clinicaltrialsubjectid, imageid):
     if response:
         # pdb["uuid"] = response[0]['uuid'][0]['value']
         pdb["slide"] = response[0]['nid'][0]['value']
-        print('slide id', pdb["slide"])
+        # print('slide id', pdb["slide"])
     else:
         print('Error getting ID.', response)
         print('endpoint', endpoint)
