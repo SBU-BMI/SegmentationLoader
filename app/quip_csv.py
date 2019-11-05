@@ -339,7 +339,11 @@ if __name__ == "__main__":
                         exit(1)
 
                 mfiles = get_file_list(file_loc)
+                if not mfiles:
+                    eprint("Could not find metadata json files")
+                    exit(1)
                 p = Pool(processes=2)
                 p.map(process_quip, mfiles, 1)
-    except:
-        eprint('Could not parse file: ', manifest)
+    except MyException as e:
+        eprint(e.args[0])
+        exit(1)
