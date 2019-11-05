@@ -196,8 +196,8 @@ def poly_geojson(polydata, imw, imh):
             maxx = x
         if maxy < y:
             maxy = y
-    except IndexError as e:
-        print('Had some trouble making this polygon', polydata, e)
+    except IndexError as err:
+        print('Had some trouble making this polygon', polydata, err)
         return None, None, None
 
     polyarray.append((x, y))
