@@ -8,22 +8,18 @@ import glob
 import json
 import os
 import random
-import sys
-import urllib.parse
+
 from multiprocessing import Pool
 
-import requests
 from geojson import Point, Polygon
+
+from pathdbapi import *
 
 import quipargs
 import quipdb
 
 pathdb = False
 pdb = {}
-
-
-def eprint(*args, **kwargs):
-    print(*args, file=sys.stderr, **kwargs)
 
 
 def get_file_list(folder):
@@ -275,48 +271,6 @@ def set_document_metadata(gj_poly, bbox, mdata, batch_id, tag_id, name):
     gj_poly["provenance"] = set_provenance_metadata(mdata, batch_id, tag_id, name, pathdb, pdb)
 
 
-def get_auth_token():
-    '''
-    get an auth token
-    '''
-    endpoint = pdb["url"] + '/jwt/token'
-    response = requests.get(endpoint, auth=(pdb["user"], pdb["passwd"]))
-    if response.status_code == 403:
-        raise MyException('Error getting token. status_code was: {}'.format(response.status_code))
-    else:
-        response = response.json()
-        token_string = response['token']
-
-    return token_string
-
-
-def get_slide_unique_id(collection, studyid, clinicaltrialsubjectid, imageid):
-    # Get token
-    token = get_auth_token()
-
-    # COLLECTION/STUDY/SUBJECT/IMAGE
-    coll_encoded = urllib.parse.quote(collection)
-
-    # NEW WAY
-    endpoint = pdb["url"] + "/idlookup/" + coll_encoded + "/" + studyid + "/" + clinicaltrialsubjectid + "/" + imageid
-    # OLD WAY
-    # endpoint = pdb["url"] + "/idlookup/" + studyid + "/" + clinicaltrialsubjectid + "/" + imageid + "/" + coll_encoded
-    # print('endpoint', endpoint)
-
-    headers = {"Authorization": "Bearer " + token}
-    response = requests.get(endpoint, headers=headers).json()
-    if response:
-        # pdb["uuid"] = response[0]['uuid'][0]['value']
-        pdb["slide"] = response[0]['nid'][0]['value']
-        # print('slide id', pdb["slide"])
-    else:
-        eprint('Error getting ID.', response)
-        eprint('endpoint', endpoint)
-        exit(1)
-
-    return str(pdb["slide"])
-
-
 def is_blank(myString):
     if myString and myString.strip():
         # myString is not None AND myString is not empty or blank
@@ -338,14 +292,6 @@ def check_args_pathdb(args):
     # pdb["uuid"] = ""
 
 
-class MyException(Exception):
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return self.message
-
-
 if __name__ == "__main__":
     quipargs.args = vars(quipargs.parser.parse_args())
     pathdb = quipargs.args["pathdb"]
@@ -363,6 +309,8 @@ if __name__ == "__main__":
         exit(1)
 
     try:
+        token_string = get_auth_token(pdb["url"], pdb["user"], pdb["passwd"])
+
         with open(manifest) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             next(csv_reader)
@@ -379,7 +327,9 @@ if __name__ == "__main__":
                     pdb["imageid"] = row[3]
 
                     try:
-                        _id = get_slide_unique_id(pdb["collection"], pdb["study"], pdb["subject"], pdb["imageid"])
+                        _id = get_slide_unique_id(token_string, pdb["url"], pdb["collection"], pdb["study"],
+                                                  pdb["subject"], pdb["imageid"])
+                        pdb["slide"] = _id
                         if is_blank(_id):
                             eprint('Slide not found ' + pdb["imageid"])
                             exit(1)
