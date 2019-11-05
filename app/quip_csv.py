@@ -2,7 +2,7 @@
 Loads wsi segmentations to the database.
 """
 from __future__ import print_function
-
+import datetime
 import csv
 import glob
 import json
@@ -78,6 +78,7 @@ def process_file(mdata, fname, idx):
 
     cnt = 0
     multi_documents = []
+    submit_date = datetime.datetime.utcnow()
     for row in csvreader:
         polydata = row[polycol]
         polyjson, corners, bounding_box = poly_geojson(polydata.split(":"), image_width, image_height)
@@ -120,7 +121,7 @@ def process_file(mdata, fname, idx):
         gj_poly["geometries"] = geo_collection
         gj_poly["footprint"] = float(row[headers.index("AreaInPixels")])
 
-        set_document_metadata(gj_poly, corners, mdata, "b0", "t0", name)
+        set_document_metadata(gj_poly, corners, mdata, "b0", "t0", name, submit_date)
         multi_documents.append(gj_poly)
         cnt = cnt + 1
 
@@ -133,7 +134,7 @@ def process_file(mdata, fname, idx):
         quipdb.submit_results(mydb, multi_documents)
         res = quipdb.check_metadata(mydb, mdata, pathdb, pdb)
         if res is None:
-            quipdb.submit_metadata(mydb, mdata, pathdb, pdb)
+            quipdb.submit_metadata(mydb, mdata, pathdb, pdb, submit_date)
         myclient.close()
 
 
@@ -228,7 +229,7 @@ def set_scalar_features(row, headers, polycol, name):
     return scalar_values
 
 
-def set_provenance_metadata(mdata, batch_id, tag_id, name, pathdb, pdb):
+def set_provenance_metadata(mdata, batch_id, tag_id, name, pathdb, pdb, submit_date):
     # IMAGE
     image = {}
     if pathdb:
@@ -257,10 +258,11 @@ def set_provenance_metadata(mdata, batch_id, tag_id, name, pathdb, pdb):
     provenance["data_loader"] = "0.99"
     provenance["batch_id"] = batch_id
     provenance["tag_id"] = tag_id
+    provenance["submit_date"] = submit_date
     return provenance
 
 
-def set_document_metadata(gj_poly, bbox, mdata, batch_id, tag_id, name):
+def set_document_metadata(gj_poly, bbox, mdata, batch_id, tag_id, name, submit_date):
     gj_poly["parent_id"] = "self"
     gj_poly["normalized"] = "true"
     gj_poly["bbox"] = bbox
@@ -268,7 +270,7 @@ def set_document_metadata(gj_poly, bbox, mdata, batch_id, tag_id, name):
     gj_poly["y"] = (float(bbox[1]) + float(bbox[3])) / 2
     gj_poly["object_type"] = "nucleus"
     gj_poly["randval"] = random.random()
-    gj_poly["provenance"] = set_provenance_metadata(mdata, batch_id, tag_id, name, pathdb, pdb)
+    gj_poly["provenance"] = set_provenance_metadata(mdata, batch_id, tag_id, name, pathdb, pdb, submit_date)
 
 
 def is_blank(myString):

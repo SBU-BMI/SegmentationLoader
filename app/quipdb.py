@@ -1,4 +1,3 @@
-import datetime
 import random
 
 from pymongo import MongoClient
@@ -36,7 +35,7 @@ def check_metadata(db, mdata, pathdb, pdb):
     return res
 
 
-def submit_metadata(db, mdata, pathdb, pdb):
+def submit_metadata(db, mdata, pathdb, pdb, submit_date):
     mdoc = {}
     imgdoc = {}
 
@@ -85,7 +84,7 @@ def submit_metadata(db, mdata, pathdb, pdb):
     provdoc["algorithm_params"] = algparms
 
     provdoc["randval"] = random.random()
-    provdoc["submit_date"] = datetime.datetime.utcnow()
+    provdoc["submit_date"] = submit_date
     mdoc["analysis"] = provdoc
     res = db.analysis.insert_one(mdoc)
 
