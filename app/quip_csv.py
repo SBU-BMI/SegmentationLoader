@@ -255,7 +255,7 @@ def set_provenance_metadata(mdata, batch_id, tag_id, name, pathdb, pdb, submit_d
     provenance = {}
     provenance["image"] = image
     provenance["analysis"] = analysis
-    provenance["data_loader"] = "0.99"
+    provenance["data_loader"] = "quip_csv"
     provenance["batch_id"] = batch_id
     provenance["tag_id"] = tag_id
     provenance["submit_date"] = submit_date
