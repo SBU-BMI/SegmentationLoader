@@ -3,33 +3,36 @@ import datetime
 from pathdbapi import *
 from quipdb import *
 import csv
+import sys
 
 # Global vars
 img = {
-    "study": "",
-    "subject": "",
-    "image": ""
+    'study': '',
+    'subject': '',
+    'image': ''
 }
 
 MARK = 'mark'
 ANALYSIS = 'analysis'
 
 # Args
-execution_id = ""
-file_location = ""
-collection = ""
+execution_id = ''
+file_location = ''
+collection = ''
 
 # Mongo vars
 myclient = connect()
-mydb = myclient[""]
+mydb = myclient['']
 
 # Pathdb vars
-url = ""
-token = get_auth_token(url, "", "")
+url = ''
+token = get_auth_token(url, sys.argv[1], sys.argv[2])
+
+mydate = datetime.datetime.utcnow()
 
 
 def do_removal(mycol, myquery):
-    print("*** Removing docs in " + mycol.name + "... ***")
+    print('*** Removing docs in ' + mycol.name + '... ***')
     count = mycol.count_documents(myquery)
     if count == 0:
         print('No docs to remove', mycol.name, '; query:', myquery)
@@ -43,7 +46,7 @@ def do_removal(mycol, myquery):
             if mycol.name == MARK:
                 ret_val = check_it(x['provenance']['image'])
             if ret_val:
-                mycol.delete_one({"_id": x['_id']})
+                mycol.delete_one({'_id': x['_id']})
 
 
 def do_print(mycol, myquery):
@@ -69,16 +72,16 @@ def print_it(doc, x):
 def check_it(x):
     if x['study'] != img['study'] or x['subject'] != img['subject'] or x['imageid'] != img['image']:
         print("\nSomething didn't match up")
-        print(x['study'], "!=", img['study'])
-        print(x['subject'], "!=", img['subject'])
-        print(x['imageid'], "!=", img['image'], '\n')
+        print(x['study'], '!=', img['study'])
+        print(x['subject'], '!=', img['subject'])
+        print(x['imageid'], '!=', img['image'], '\n')
         return 0
     else:
         return 1
 
 
 def do_rename(mycol, myquery, val):
-    print("*** Renaming execution_id in " + mycol.name + "... ***")
+    print('*** Renaming execution_id in ' + mycol.name + '... ***')
     count = mycol.count_documents(myquery)
     if count == 0:
         print('No docs to rename', mycol.name, '; query:', myquery)
@@ -90,33 +93,33 @@ def do_rename(mycol, myquery, val):
         for x in mydocs:
             ret_val = check_it(x['image'])
             if ret_val:
-                mycol.update_one({"_id": x['_id']}, {'$set': {'analysis.execution_id': val}}, upsert=False)
+                mycol.update_one({'_id': x['_id']}, {'$set': {'analysis.execution_id': val,
+                                                              'provenance.update_date': mydate}}, upsert=False)
 
     if mycol.name == MARK:
         for x in mydocs:
             ret_val = check_it(x['provenance']['image'])
             if ret_val:
-                mycol.update_one({"_id": x['_id']}, {'$set': {'provenance.analysis.execution_id': val}}, upsert=False)
+                mycol.update_one({'_id': x['_id']}, {'$set': {'provenance.analysis.execution_id': val,
+                                                              'provenance.update_date': mydate}}, upsert=False)
 
 
 def do_thing(mycol, myquery):
-    print("*** do_thing " + mycol.name + "... ***")
+    print('*** do_thing ' + mycol.name + '... ***')
     count = mycol.count_documents(myquery)
     if count == 0:
         print('No docs to do_thing', mycol.name, '; query:', myquery)
     else:
         print('Count', mycol.name, ':', count)
     mydocs = mycol.find(myquery)
-
     if mycol.name == MARK:
         for x in mydocs:
             ret_val = check_it(x['provenance']['image'])
             if ret_val:
-                q = {"_id": x['_id']}, {
-                    "$set": {"provenance.data_loader": "quip_csv.py", "provenance.batch_id": "mybatch",
-                             "tag_id": "mytag"}}
-                print(q)
-                mycol.update_one(q, upsert=False)
+                mycol.update_one({'_id': x['_id']}, {
+                    '$set': {'provenance.data_loader': 'quip-segloader', 'provenance.batch_id': 'bf72e8e',
+                             'provenance.tag_id': 'a22a94e', 'provenance.submit_date': mydate}})
+                # mycol.update_one({'_id': x['_id']}, {'$unset': {'tag_id': ""}})
 
 
 # Read file
@@ -134,15 +137,16 @@ with open(file_location) as csv_file:
 
             id = get_slide_unique_id(token, url, collection, img['study'], img['subject'], img['image'])
             print('id:', id)
-            a_query = {"image.slide": id, "analysis.execution_id": execution_id}
-            m_query = {"provenance.image.slide": id, "provenance.analysis.execution_id": execution_id}
+            a_query = {'image.slide': id, 'analysis.execution_id': execution_id}
+            m_query = {'provenance.image.slide': id, 'provenance.analysis.execution_id': execution_id}
             # do_removal(mydb[ANALYSIS], a_query)
             # do_removal(mydb[MARK], m_query)
             # do_print(mydb[ANALYSIS], a_query)
             # do_print(mydb[MARK], m_query)
-            # do_rename(mydb[ANALYSIS], a_query, execution_id + "_mark_backup")
-            # do_rename(mydb[MARK], m_query, execution_id + "_mark_backup")
-            do_thing(mydb[MARK], m_query)
+            do_rename(mydb[ANALYSIS], a_query, execution_id + '_mark_backup')
+            do_rename(mydb[MARK], m_query, execution_id + '_mark_backup')
+            # print(a_query)
+            # do_thing(mydb[MARK], m_query)
 
 print('DONE.')
 
@@ -152,7 +156,7 @@ print('DONE.')
 # token = get_auth_token(sys.argv[1], sys.argv[2], sys.argv[3])
 # print(token)
 #
-# id = get_slide_unique_id(token, sys.argv[1], "TCGA BRCA DEMO", "TCGA-BRCA", "TCGA-A2-A3XZ", "A3XZ-01Z-00-DX1")
+# id = get_slide_unique_id(token, sys.argv[1], 'TCGA BRCA DEMO', 'TCGA-BRCA', 'TCGA-A2-A3XZ', 'A3XZ-01Z-00-DX1')
 # print(id)
 #
-# raise MyException("My hovercraft is full of eels")
+# raise MyException('My hovercraft is full of eels')
