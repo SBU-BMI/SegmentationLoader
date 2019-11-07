@@ -96,15 +96,15 @@ def do_rename(mycol, myquery, val):
         for x in mydocs:
             ret_val = check_it(x['image'])
             if ret_val:
-                mycol.update_one({'_id': x['_id']}, {'$set': {'analysis.execution_id': val,
-                                                              'provenance.update_date': mydate}}, upsert=False)
+                mycol.update_one({'_id': x['_id']},
+                                 {'$set': {'analysis.execution_id': val, 'provenance.update_date': mydate}})
 
     if mycol.name == MARK:
         for x in mydocs:
             ret_val = check_it(x['provenance']['image'])
             if ret_val:
-                mycol.update_one({'_id': x['_id']}, {'$set': {'provenance.analysis.execution_id': val,
-                                                              'provenance.update_date': mydate}}, upsert=False)
+                mycol.update_one({'_id': x['_id']},
+                                 {'$set': {'provenance.analysis.execution_id': val, 'provenance.update_date': mydate}})
 
 
 def do_thing(mycol, myquery):
