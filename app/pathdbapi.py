@@ -26,6 +26,27 @@ def get_auth_token(url, user, password):
     return token_string
 
 
+def slides_in_collection(token, url, coll_id):
+    endpoint = url + '/listofimages/' + str(coll_id) + '?_format=json'
+    # print(endpoint)
+    headers = {"Authorization": "Bearer " + token}
+    response = requests.get(endpoint, headers=headers).json()
+    if not response:
+        eprint('slides_in_collection', response)
+        exit(1)
+
+    return response
+
+
+def maps_for_slide(token, url, slide_id):
+    endpoint = url + '/maps/' + str(slide_id) + '?_format=json'
+    # print(endpoint)
+    headers = {"Authorization": "Bearer " + token}
+    response = requests.get(endpoint, headers=headers).json()
+
+    return response
+
+
 # Get the slide unique identifier
 def get_slide_unique_id(token, url, collection, studyid, clinicaltrialsubjectid, imageid):
     # COLLECTION/STUDY/SUBJECT/IMAGE
