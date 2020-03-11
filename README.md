@@ -4,7 +4,7 @@ Load WSI segmentations to mongodb instance in a Docker network environment (i.e.
 
 ## Setup
 ### Folder Structure
-See  **<a href="./tree/master/data">EXAMPLE</a>**.
+See  **<a href="./data/segmentation_results">EXAMPLE</a>**.
 
 Directory structure of ./data:
 
