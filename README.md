@@ -20,7 +20,7 @@ Directory structure of ./data:
 The manifest file will on the same level as the directory that contains 
  
 ### Manifest file
-Segmentation data is one folder per slide.  So in the **<a href="./blob/master/data/segmentation_results/manifest.csv">manifest.csv</a>** file, you may have, for example:
+Segmentation data is one folder per slide.  So in the **<a href="./data/segmentation_results/manifest.csv">manifest.csv</a>** file, you may have, for example:
 
 ```
 segmentdir,studyid,clinicaltrialsubjectid,imageid
