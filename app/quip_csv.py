@@ -65,7 +65,6 @@ def process_file(mdata, fname, idx):
     # print("IDX: ", idx, " File: ", fname)
     image_width = mdata["image_width"]
     image_height = mdata["image_height"]
-    # print(image_width, image_height)
 
     fname = fname + "/" + mdata["out_file_prefix"] + "-features.csv"
 
@@ -117,8 +116,6 @@ def process_file(mdata, fname, idx):
         geo_collection["features"] = features
 
         gj_poly = {}
-        # if pathdb:
-        #     gj_poly["uuid"] = uuid
         gj_poly["properties"] = scfeatures
         gj_poly["geometries"] = geo_collection
         gj_poly["footprint"] = float(row[headers.index("AreaInPixels")])
@@ -211,7 +208,6 @@ def poly_geojson(polydata, imw, imh):
     mid_point = Point((minx, maxy))
     max_point = Point((maxx, maxy))  # largest x and y value.
     m1d_point = Point((maxx, miny))
-    # min_point = Point((minx, miny))  # closes the loop
     my_array = [[min_point, mid_point, max_point, m1d_point, min_point]]
     bounding_box = Polygon(my_array)
 
@@ -293,7 +289,6 @@ def check_args_pathdb(args):
     pdb["user"] = args["user"]
     pdb["passwd"] = args["passwd"]
     pdb["slide"] = ""
-    # pdb["uuid"] = ""
 
 
 if __name__ == "__main__":
@@ -312,52 +307,44 @@ if __name__ == "__main__":
         print('Manifest file not found:', manifest)
         exit(1)
 
-    try:
-        print()
-        api = MyApi(pdb["url"], pdb["user"], pdb["passwd"])
-        # token_string = get_auth_token(pdb["url"], pdb["user"], pdb["passwd"])
+    api = MyApi(pdb["url"], pdb["user"], pdb["passwd"])
 
-        with open(manifest) as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=',')
-            next(csv_reader)
-            for row in csv_reader:
-                file_loc = os.path.join(dirpath, row[0])
+    with open(manifest) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        next(csv_reader)
+        for row in csv_reader:
+            file_loc = os.path.join(dirpath, row[0])
 
-                if not os.path.exists(file_loc):
-                    print('File location not found:', file_loc)
+            if not os.path.exists(file_loc):
+                print('File location not found:', file_loc)
+                exit(1)
+
+            if pathdb:
+                pdb["study"] = row[1]
+                pdb["subject"] = row[2]
+                pdb["imageid"] = row[3]
+
+                try:
+                    _id = 0
+                    uri = "/idlookup/" + pdb["collection"] + "/" + pdb["study"] + "/" + pdb["subject"] + "/" + pdb[
+                        "imageid"]
+                    response = api.get_data(uri)
+                    if response:
+                        _id = response[0]['nid'][0]['value']
+                        print("_id", _id)
+                    else:
+                        print("Could not get: " + uri)
+                        continue
+
+                    pdb["slide"] = _id  # numeric
+                except Exception as e:
+                    details = e.args[0]
+                    print(details)
                     exit(1)
 
-                if pathdb:
-                    pdb["study"] = row[1]
-                    pdb["subject"] = row[2]
-                    pdb["imageid"] = row[3]
-
-                    try:
-                        # _id = get_slide_unique_id(pdb["collection"], pdb["study"], pdb["subject"], pdb["imageid"])
-                        _id = 0
-                        uri = "/idlookup/" + pdb["collection"] + "/" + pdb["study"] + "/" + pdb["subject"] + "/" + pdb["imageid"]
-                        response = api.get_data(uri)
-                        if response:
-                            _id = response[0]['nid'][0]['value']
-                        else:
-                            print("Could not get: " + uri)
-                            continue
-
-                        pdb["slide"] = _id
-                        if is_blank(_id):
-                            print('Slide not found ' + pdb["imageid"])
-                            exit(1)
-                    except Exception as e:
-                        details = e.args[0]
-                        print(details)
-                        exit(1)
-
-                mfiles = get_file_list(file_loc)
-                if not mfiles:
-                    print("Could not find metadata json files")
-                    exit(1)
-                p = Pool(processes=2)
-                p.map(process_quip, mfiles, 1)
-    except Exception as e:
-        print(e.args[0])
-        exit(1)
+            mfiles = get_file_list(file_loc)
+            if not mfiles:
+                print("Could not find metadata json files")
+                exit(1)
+            p = Pool(processes=2)
+            p.map(process_quip, mfiles, 1)
