@@ -340,8 +340,8 @@ if __name__ == "__main__":
                     pdb["slide"] = _id  # numeric
                 except Exception as e:
                     details = e.args[0]
-                    print(details)
-                    exit(1)
+                    print('here', details)
+                    continue
 
             mfiles = get_file_list(file_loc)
             if not mfiles:
