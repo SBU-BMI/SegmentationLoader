@@ -331,7 +331,7 @@ if __name__ == "__main__":
                     response = api.get_data(uri)
                     if response:
                         _id = response[0]['nid'][0]['value']
-                        print("_id", _id)
+                        print("_id", _id, "imageid", pdb["imageid"])
                     else:
                         print("Could not get: " + uri)
                         continue
