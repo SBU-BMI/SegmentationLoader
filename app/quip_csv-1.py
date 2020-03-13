@@ -8,7 +8,6 @@ import glob
 import json
 import os
 import random
-import sys
 
 from multiprocessing import Pool
 
@@ -21,7 +20,6 @@ import quipdb
 
 pathdb = False
 pdb = {}
-api = {}
 
 
 def get_file_list(folder):
@@ -75,7 +73,7 @@ def process_file(mdata, fname, idx):
     polycol = headers.index("Polygon")
 
     if is_blank(mdata["analysis_id"]):
-        print('execution_id cannot be blank. File:', fname)
+        eprint('execution_id cannot be blank. File:', fname)
         exit(1)
 
     cnt = 0
@@ -285,8 +283,8 @@ def is_blank(myString):
 
 def check_args_pathdb(args):
     if not args['user'] or not args['passwd'] or not args['collectionname']:
-        print("dependency error")
-        print("when in pathdb mode, must provide: url, username, and password")
+        eprint("dependency error")
+        eprint("when in pathdb mode, must provide: url, username, and password")
         exit(1)
     pdb["collection"] = args["collectionname"]
     pdb["url"] = args["url"]
@@ -309,13 +307,11 @@ if __name__ == "__main__":
     dirpath = os.path.join('/data', quipargs.args['src'])
     manifest = os.path.join(dirpath, 'manifest.csv')
     if not os.path.exists(manifest):
-        print('Manifest file not found:', manifest)
+        eprint('Manifest file not found:', manifest)
         exit(1)
 
     try:
-        print()
-        api = MyApi(pdb["url"], pdb["user"], pdb["passwd"])
-        # token_string = get_auth_token(pdb["url"], pdb["user"], pdb["passwd"])
+        token_string = get_auth_token(pdb["url"], pdb["user"], pdb["passwd"])
 
         with open(manifest) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
@@ -324,7 +320,7 @@ if __name__ == "__main__":
                 file_loc = os.path.join(dirpath, row[0])
 
                 if not os.path.exists(file_loc):
-                    print('File location not found:', file_loc)
+                    eprint('File location not found:', file_loc)
                     exit(1)
 
                 if pathdb:
@@ -333,31 +329,23 @@ if __name__ == "__main__":
                     pdb["imageid"] = row[3]
 
                     try:
-                        # _id = get_slide_unique_id(pdb["collection"], pdb["study"], pdb["subject"], pdb["imageid"])
-                        _id = 0
-                        uri = "/idlookup/" + pdb["collection"] + "/" + pdb["study"] + "/" + pdb["subject"] + "/" + pdb["imageid"]
-                        response = api.get_data(uri)
-                        if response:
-                            _id = response[0]['nid'][0]['value']
-                        else:
-                            print("Could not get: " + uri)
-                            continue
-
+                        _id = get_slide_unique_id(token_string, pdb["url"], pdb["collection"], pdb["study"],
+                                                  pdb["subject"], pdb["imageid"])
                         pdb["slide"] = _id
                         if is_blank(_id):
-                            print('Slide not found ' + pdb["imageid"])
+                            eprint('Slide not found ' + pdb["imageid"])
                             exit(1)
-                    except Exception as e:
+                    except MyException as e:
                         details = e.args[0]
-                        print(details)
+                        eprint(details)
                         exit(1)
 
                 mfiles = get_file_list(file_loc)
                 if not mfiles:
-                    print("Could not find metadata json files")
+                    eprint("Could not find metadata json files")
                     exit(1)
                 p = Pool(processes=2)
                 p.map(process_quip, mfiles, 1)
-    except Exception as e:
-        print(e.args[0])
+    except MyException as e:
+        eprint(e.args[0])
         exit(1)
