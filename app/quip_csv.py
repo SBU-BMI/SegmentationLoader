@@ -330,7 +330,7 @@ if __name__ == "__main__":
                     uri = "/idlookup/" + pdb["collection"] + "/" + pdb["study"] + "/" + pdb["subject"] + "/" + pdb[
                         "imageid"]
                     response = api.get_data(uri)
-                    if response:
+                    if response is not None:
                         _id = response[0]['nid'][0]['value']
                         print("_id:", _id, "quad id:", uri.replace("/idlookup/", ""))
                     else:

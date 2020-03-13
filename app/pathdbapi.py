@@ -57,7 +57,14 @@ class MyApi:
     @Decorators.refresh_token
     def get_data(self, url):
         # make our API request
-        return requests.get(self.host + url, headers={"Authorization": "Bearer " + self.access_token}).json()
+        r = requests.get(self.host + url, headers={"Authorization": "Bearer " + self.access_token})
+        js = ""
+        if 'json' in r.headers.get('Content-Type'):
+            js = r.json()
+        else:
+            print('Response content is not in JSON format.', js)
+            js = None
+        return js
 
     @Decorators.refresh_token
     def get_collection_info(self, collection):
