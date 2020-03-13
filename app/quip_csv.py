@@ -326,12 +326,13 @@ if __name__ == "__main__":
 
                 try:
                     _id = 0
+
                     uri = "/idlookup/" + pdb["collection"] + "/" + pdb["study"] + "/" + pdb["subject"] + "/" + pdb[
                         "imageid"]
                     response = api.get_data(uri)
                     if response:
                         _id = response[0]['nid'][0]['value']
-                        print("_id", _id, "imageid", pdb["imageid"])
+                        print("_id:", _id, "quad id:", uri.replace("/idlookup/", ""))
                     else:
                         print("Could not get: " + uri)
                         continue
