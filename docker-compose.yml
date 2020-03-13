@@ -4,7 +4,7 @@ services:
   segloaderdev:
     build:
       context: .
-    image: quip_distro_segloader_dev
+    image: quip_segloader_dev
     container_name: quip-segloader-dev
     volumes:
       - ./data:/data
