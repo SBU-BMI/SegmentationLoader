@@ -22,8 +22,6 @@ class MyApi:
                 raise Exception("Request for access token failed.")
         except Exception as e:
             print(e)
-        else:
-            self.access_token_expiration = time.time() + 3500
 
     def get_access_token(self):
         # the function that is
@@ -31,13 +29,13 @@ class MyApi:
         try:
             # request an access token
             response = requests.get(self.host + "/jwt/token", auth=(self.username, self.password))
-
             # optional: raise exception for status code
             response.raise_for_status()
         except Exception as e:
             print(e)
             return None
         else:
+            self.access_token_expiration = time.time() + 3500
             # assuming the response's structure is
             # {"token": ""}
             return response.json()['token']
