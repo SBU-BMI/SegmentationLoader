@@ -332,7 +332,7 @@ if __name__ == "__main__":
                     response = api.get_data(uri)
                     if response is not None:
                         _id = response[0]['nid'][0]['value']
-                        print("_id:", _id, "quad id:", uri.replace("/idlookup/", ""))
+                        print("_id:", _id, "quad:", uri.replace("/idlookup/", ""))
                     else:
                         print("Could not get: " + uri)
                         continue
