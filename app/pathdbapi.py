@@ -50,6 +50,7 @@ class MyApi:
                 print("time: {}".format(time.time()))
                 print("Expires in: {}".format(api.access_token_expiration - time.time()))
                 if api.access_token_expiration - time.time() <= 0:
+                    print("WE'RE HERE!")
                     api.get_access_token()
                 return decorated(api, *args, **kwargs)
 
