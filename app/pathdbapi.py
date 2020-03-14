@@ -24,7 +24,6 @@ class MyApi:
             print(e)
         else:
             self.access_token_expiration = time.time() + 3500
-            print("access_token_expiration {}".format(self.access_token_expiration))
 
     def get_access_token(self):
         # the function that is
@@ -51,7 +50,8 @@ class MyApi:
             def wrapper(api, *args, **kwargs):
                 print("api token expire: {}".format(api.access_token_expiration))
                 print("time: {}".format(time.time()))
-                if time.time() > api.access_token_expiration:
+                print("Expires in: {}".format(api.access_token_expiration - time.time()))
+                if api.access_token_expiration - time.time() <= 0:
                     api.get_access_token()
                 return decorated(api, *args, **kwargs)
 
