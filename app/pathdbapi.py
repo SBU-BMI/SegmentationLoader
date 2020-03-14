@@ -24,6 +24,7 @@ class MyApi:
             print(e)
         else:
             self.access_token_expiration = time.time() + 3500
+            print("access_token_expiration {}".format(self.access_token_expiration))
 
     def get_access_token(self):
         # the function that is
@@ -48,6 +49,8 @@ class MyApi:
             # the function that is used to check
             # the JWT and refresh if necessary
             def wrapper(api, *args, **kwargs):
+                print("api token expire: {}".format(api.access_token_expiration))
+                print("time: {}".format(time.time()))
                 if time.time() > api.access_token_expiration:
                     api.get_access_token()
                 return decorated(api, *args, **kwargs)
@@ -58,11 +61,10 @@ class MyApi:
     def get_data(self, url):
         # make our API request
         r = requests.get(self.host + url, headers={"Authorization": "Bearer " + self.access_token})
-        js = ""
         if 'json' in r.headers.get('Content-Type'):
             js = r.json()
         else:
-            print('Response content is not in JSON format.', js)
+            print("Response content is not in JSON format: {}".format(r))
             js = None
         return js
 
