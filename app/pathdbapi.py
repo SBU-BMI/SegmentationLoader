@@ -46,8 +46,6 @@ class MyApi:
             # the function that is used to check
             # the JWT and refresh if necessary
             def wrapper(api, *args, **kwargs):
-                print("api token expire: {}".format(api.access_token_expiration))
-                print("time: {}".format(time.time()))
                 print("Expires in: {}".format(api.access_token_expiration - time.time()))
                 if api.access_token_expiration - time.time() <= 0:
                     print("WE'RE HERE!")
