@@ -27,7 +27,6 @@ class MyApi:
         try:
             # request access token
             response = requests.get(self.host + "/jwt/token", auth=(self.username, self.password))
-            print('status', response.status_code)
             # optional: raise exception for status code
             # response.raise_for_status()
         except Exception as e:
@@ -58,7 +57,16 @@ class MyApi:
             js = r.json()
         else:
             print("Response content is not in JSON format: {}".format(r.text))
-            js = None
+            # Force the refresh
+            self.get_access_token()
+            r = requests.get(self.host + url, headers={"Authorization": "Bearer " + self.access_token})
+            if 'json' in r.headers.get('Content-Type'):
+                js = r.json()
+            else:
+                js = None
+                print("JWT is issuing the same token.")
+                exit(1)
+
         return js
 
     @Decorators.refresh_token
