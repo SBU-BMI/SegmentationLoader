@@ -56,7 +56,6 @@ class MyApi:
         # make our API request
         r = requests.get(self.host + url, headers={"Authorization": "Bearer " + self.access_token})
         if 'json' in r.headers.get('Content-Type'):
-            print("Got JSON")
             js = r.json()
         else:
             print("Response content is not in JSON format: {}".format(r.text))
