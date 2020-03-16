@@ -35,8 +35,7 @@ class MyApi:
             return None
         else:
             self.access_token_expiration = time.time() + 3500
-            token = response.json()['token']
-            return token
+            return response.json()['token']
 
     class Decorators:
         @staticmethod
