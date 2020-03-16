@@ -10,8 +10,7 @@ class MyApi:
     access_token_expiration = None
 
     def __init__(self, host, username, password):
-        # the function that is executed when
-        # an instance of the class is created
+        # executed when an instance of the class is created
         self.host = host
         self.username = username
         self.password = password
@@ -21,19 +20,19 @@ class MyApi:
             if self.access_token is None:
                 raise Exception("Request for access token failed.")
         except Exception as e:
-            print(e)
+            print("Exception: {}".format(e))
 
     def get_access_token(self):
-        # the function that is
-        # used to request the JWT
+        # is used to request the JWT
         try:
-            # request an access token
+            # request access token
             response = requests.get(self.host + "/jwt/token", auth=(self.username, self.password))
-            print('response', response)
+            print('status', response.status_code)
+            print('text', response.text)
             # optional: raise exception for status code
             # response.raise_for_status()
         except Exception as e:
-            print(e)
+            print("Exception: {}".format(e))
             return None
         else:
             self.access_token_expiration = time.time() + 3500
@@ -44,8 +43,7 @@ class MyApi:
     class Decorators:
         @staticmethod
         def refresh_token(decorated):
-            # the function that is used to check
-            # the JWT and refresh if necessary
+            # used to check the JWT and refresh if necessary
             def wrapper(api, *args, **kwargs):
                 # print("Expires in: {}".format(api.access_token_expiration - time.time()))
                 if api.access_token_expiration - time.time() <= 0:
@@ -58,11 +56,13 @@ class MyApi:
     @Decorators.refresh_token
     def get_data(self, url):
         # make our API request
+        print('sanity check token', self.access_token)
         r = requests.get(self.host + url, headers={"Authorization": "Bearer " + self.access_token})
         if 'json' in r.headers.get('Content-Type'):
+            print("Got JSON: {}".format(r.text))
             js = r.json()
         else:
-            print("Response content is not in JSON format: {}".format(r))
+            print("Response content is not in JSON format: {}".format(r.text))
             js = None
         return js
 
