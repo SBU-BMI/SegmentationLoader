@@ -6,70 +6,41 @@ class MyApi:
     host = None
     username = None
     password = None
-    access_token = None
-    access_token_expiration = None
+    cookie = None
 
     def __init__(self, host, username, password):
-        # executed when an instance of the class is created
         self.host = host
         self.username = username
         self.password = password
 
         try:
-            self.access_token = self.get_access_token()
-            if self.access_token is None:
-                raise Exception("Request for access token failed.")
+            self.cookie = self.get_cookie()
+            if self.cookie is None:
+                raise Exception("Request for cookie failed.")
         except Exception as e:
             print("Exception: {}".format(e))
 
-    def get_access_token(self):
-        # is used to request the JWT
+    def get_cookie(self):
         try:
-            # request access token
-            response = requests.get(self.host + "/jwt/token", auth=(self.username, self.password))
-            # optional: raise exception for status code
-            # response.raise_for_status()
+            auth = "{\"name\":\"" + self.username + "\", \"pass\": \"" + self.password + "\"}"
+            r1 = requests.post(self.host + '/user/login?_format=json', data=auth)
         except Exception as e:
             print("Exception: {}".format(e))
             return None
         else:
-            self.access_token_expiration = time.time() + 3500
-            return response.json()['token']
+            return r1.cookies
 
-    class Decorators:
-        @staticmethod
-        def refresh_token(decorated):
-            # used to check the JWT and refresh if necessary
-            def wrapper(api, *args, **kwargs):
-                # print("Expires in: {}".format(api.access_token_expiration - time.time()))
-                if api.access_token_expiration - time.time() <= 0:
-                    print("Refresh token...")
-                    api.get_access_token()
-                return decorated(api, *args, **kwargs)
-
-            return wrapper
-
-    @Decorators.refresh_token
     def get_data(self, url):
         # make our API request
-        r = requests.get(self.host + url, headers={"Authorization": "Bearer " + self.access_token})
-        if 'json' in r.headers.get('Content-Type'):
-            js = r.json()
+        r2 = requests.get(self.host + url, cookies=self.cookie)
+        if 'json' in r2.headers.get('Content-Type'):
+            js = r2.json()
         else:
-            print("Response content is not in JSON format: {}".format(r.text))
-            # Force the refresh
-            self.get_access_token()
-            r = requests.get(self.host + url, headers={"Authorization": "Bearer " + self.access_token})
-            if 'json' in r.headers.get('Content-Type'):
-                js = r.json()
-            else:
-                js = None
-                print("JWT is issuing the same token.")
-                exit(1)
+            print("Didn't get json. Response headers: {}".format(r2.headers))
+            js = None
 
         return js
 
-    @Decorators.refresh_token
     def get_collection_info(self, collection):
         collection_id = 0
         collection_name = ""
@@ -84,7 +55,6 @@ class MyApi:
 
         return collection_id, collection_name
 
-    @Decorators.refresh_token
     def get_collection_lookup_table(self):
         response = self.get_data('/collections?_format=json')
         lookup_table = {}
@@ -97,7 +67,6 @@ class MyApi:
 
         return lookup_table
 
-    @Decorators.refresh_token
     def get_featuremaps(self, slide_id):
         """
         Returns list of Featuremap Execution IDs

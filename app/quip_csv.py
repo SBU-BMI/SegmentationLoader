@@ -335,7 +335,8 @@ if __name__ == "__main__":
                         print("_id:", _id, "quad:", uri.replace("/idlookup/", ""))
                     else:
                         print("Could not get: " + uri)
-                        continue
+                        exit(1)
+                        # continue
 
                     pdb["slide"] = _id  # numeric
                 except Exception as e:
