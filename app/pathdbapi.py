@@ -29,8 +29,9 @@ class MyApi:
         try:
             # request an access token
             response = requests.get(self.host + "/jwt/token", auth=(self.username, self.password))
+            print('response', response)
             # optional: raise exception for status code
-            response.raise_for_status()
+            # response.raise_for_status()
         except Exception as e:
             print(e)
             return None
@@ -46,9 +47,9 @@ class MyApi:
             # the function that is used to check
             # the JWT and refresh if necessary
             def wrapper(api, *args, **kwargs):
-                print("Expires in: {}".format(api.access_token_expiration - time.time()))
+                # print("Expires in: {}".format(api.access_token_expiration - time.time()))
                 if api.access_token_expiration - time.time() <= 0:
-                    print("WE'RE HERE!")
+                    print("Refresh token...")
                     api.get_access_token()
                 return decorated(api, *args, **kwargs)
 
