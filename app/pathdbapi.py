@@ -28,7 +28,6 @@ class MyApi:
             # request access token
             response = requests.get(self.host + "/jwt/token", auth=(self.username, self.password))
             print('status', response.status_code)
-            print('text', response.text)
             # optional: raise exception for status code
             # response.raise_for_status()
         except Exception as e:
@@ -37,7 +36,6 @@ class MyApi:
         else:
             self.access_token_expiration = time.time() + 3500
             token = response.json()['token']
-            print('token', token)
             return token
 
     class Decorators:
@@ -56,10 +54,9 @@ class MyApi:
     @Decorators.refresh_token
     def get_data(self, url):
         # make our API request
-        print('sanity check token', self.access_token)
         r = requests.get(self.host + url, headers={"Authorization": "Bearer " + self.access_token})
         if 'json' in r.headers.get('Content-Type'):
-            print("Got JSON: {}".format(r.text))
+            print("Got JSON")
             js = r.json()
         else:
             print("Response content is not in JSON format: {}".format(r.text))
