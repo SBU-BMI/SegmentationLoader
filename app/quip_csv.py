@@ -67,8 +67,12 @@ def process_file(mdata, fname, idx):
     image_height = mdata["image_height"]
 
     fname = fname + "/" + mdata["out_file_prefix"] + "-features.csv"
+    if not os.path.exists(fname):
+        print("FNF: {}".format(fname))
+        return
+    else:
+        csvfile = open(fname)
 
-    csvfile = open(fname)
     csvreader = csv.reader(csvfile)
     headers = next(csvreader)
     polycol = headers.index("Polygon")
@@ -317,7 +321,8 @@ if __name__ == "__main__":
 
             if not os.path.exists(file_loc):
                 print('File location not found:', file_loc)
-                exit(1)
+                continue
+                # exit(1)
 
             if pathdb:
                 pdb["study"] = row[1]
