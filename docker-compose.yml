@@ -1,11 +1,11 @@
 version: '3.5'
 
 services:
-  segloaderdev:
+  segloader:
     build:
       context: .
-    image: quip_segloader_dev
-    container_name: quip-segloader-dev
+    image: quip_segloader
+    container_name: quip-segloader
     volumes:
       - ./data:/data
     networks:
