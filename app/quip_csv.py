@@ -89,7 +89,7 @@ def process_file(mdata, fname, idx):
         polyjson, corners, bounding_box = poly_geojson(polydata.split(":"), image_width, image_height)
 
         if polyjson is None:
-            print('PLEASE FIX FILE!', fname)
+            print('FIX:', fname)
             return
 
         name = mdata["analysis_id"]
@@ -152,7 +152,8 @@ def poly_geojson(polydata, imw, imh):
         x1 = float(polydata[0].split("[")[1]) / float(imw)
         y1 = float(polydata[1]) / float(imh)
     except ValueError:
-        print('Non-numeric data found in the file.', polydata[0], polydata[1])
+        # WE'RE FIXING IT.
+        # print('Non-numeric data found in the file.', polydata[0], polydata[1])
         # val.isalpha() will not work on '[' or ']'
         if "[" in polydata[0]:
             val = polydata[0].replace('[', '')  # Hiccup.
@@ -160,7 +161,7 @@ def poly_geojson(polydata, imw, imh):
         if "]" in polydata[1]:
             val = polydata[1].replace(']', '')  # Hiccup.
             y1 = float(val) / float(imh)
-        print('Fixed.')
+        # print('Fixed.')
 
     minx = x1
     miny = y1
