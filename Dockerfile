@@ -9,3 +9,6 @@ COPY ./app/*.py /app/
 COPY ./app/requirements.txt /app/
 RUN pip3.7 install --upgrade pip && pip3.7 install -r /app/requirements.txt
 WORKDIR /app
+
+RUN chgrp -R 0 /app && \
+    chmod -R g+rwX /app
