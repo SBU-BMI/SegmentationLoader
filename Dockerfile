@@ -10,10 +10,12 @@ COPY ./app/requirements.txt /app/
 RUN pip3.7 install --upgrade pip && pip3.7 install -r /app/requirements.txt
 WORKDIR /app
 
-RUN chgrp -R 0 /app && \
+RUN chown -R 1001:0 /app && \
+	chgrp -R 0 /app && \
     chmod -R g+rwX /app
 
-RUN chgrp -R 0 /data && \
+RUN chown -R 1001:0 /data && \
+	chgrp -R 0 /data && \
     chmod -R g+rwX /data
 
 USER 1001
