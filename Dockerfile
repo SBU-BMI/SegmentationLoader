@@ -12,3 +12,6 @@ WORKDIR /app
 
 RUN chgrp -R 0 /app && \
     chmod -R g+rwX /app
+
+USER 1001
+
