@@ -13,8 +13,7 @@ WORKDIR /app
 RUN chgrp -R 0 /app && \
     chmod -R g+rwX /app
 
-RUN mkdir /data && \
-	chgrp -R 0 /data && \
+RUN chgrp -R 0 /data && \
     chmod -R g+rwX /data
 
 USER 1001
