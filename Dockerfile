@@ -26,5 +26,5 @@ RUN mkdir -p /mongodb/db && \
 
 USER 1001
 
-# CMD /usr/bin/mongod --dbpath /mongodb/db
+CMD /usr/bin/mongod --dbpath /mongodb/db
 
