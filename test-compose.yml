@@ -1,0 +1,14 @@
+version: '3.5'
+
+services:
+    segloader:
+        image: segloader-test
+        container_name: test-segloader
+        volumes:
+           - db:/mongodb/db
+        command: "--dbpath /mongodb/db"
+
+volumes:
+    db:
+        external: true
+
