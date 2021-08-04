@@ -23,6 +23,8 @@ pathdb = False
 pdb = {}
 api = {}
 
+label_colors = ["#BB4D06", "#FF0000", "#00FF00", "#0000FF", "#D2E60E", "#1C6E3F", "#BD9920", "#00FFFF", "#FF00FF", "#6E8B3D"]
+label_colors_len = len(label_colors)
 
 def get_file_list(folder):
     '''
@@ -112,6 +114,13 @@ def process_file(mdata, fname, idx):
             },
             "nommp": True
         }
+
+        if "ClassId" in headers:
+            label_idx = headers.index("ClassId")
+            label_val = int(row[label_idx]) % label_colors_len
+            object["properties"]["style"]["color"] = str(label_colors[label_val])
+            object["properties"]["classid"] = label_val
+
         object["geometry"] = polyjson
         object["bound"] = Polygon(bounding_box)
 
