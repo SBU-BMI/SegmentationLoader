@@ -1,6 +1,5 @@
 import requests
 
-
 class MyApi:
     host = None
     username = None
@@ -23,11 +22,16 @@ class MyApi:
         try:
             auth = "{\"name\":\"" + self.username + "\", \"pass\": \"" + self.password + "\"}"
             r1 = requests.post(self.host + '/user/login?_format=json', data=auth)
+            cookie = r1.headers['Set-Cookie']
+            p1 = cookie.split('=')
+            p1 = p1[0]
+            p2 = cookie[len(p1)+1:]
+            cookie = {p1: p2}
         except Exception as e:
             print("Exception: {}".format(e))
             return None
         else:
-            return r1.cookies
+            return cookie
 
     def get_data(self, url):
         # make our API request
