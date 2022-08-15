@@ -25,7 +25,7 @@ class MyApi:
             cookie = r1.headers['Set-Cookie']
             p1 = cookie.split('=')
             p2 = cookie[len(p1)+1]
-	    cookie = {p1: p2}
+            cookie = {p1: p2}
         except Exception as e:
             print("Exception: {}".format(e))
             return None
