@@ -22,7 +22,7 @@ class MyApi:
         try:
             auth = "{\"name\":\"" + self.username + "\", \"pass\": \"" + self.password + "\"}"
             r1 = requests.post(self.host + '/user/login?_format=json', data=auth)
-	    cookie = r1.headers['Set-Cookie']
+            cookie = r1.headers['Set-Cookie']
             p1 = cookie.split('=')
             p2 = cookie[len(p1)+1]
 	    cookie = {p1: p2}
